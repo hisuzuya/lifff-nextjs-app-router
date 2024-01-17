@@ -3,6 +3,7 @@ import React, {
   createContext,
   FC,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -30,35 +31,39 @@ export const LiffProvider: FC<
   const [liff, setLiff] = useState<Liff | null>(null);
   const [liffError, setLiffError] = useState<string | null>(null);
 
+  const initLiff = useCallback(async () => {
+    try {
+      const liffModule = await import('@line/liff');
+      const liff = liffModule.default;
+      console.log('LIFF init...');
+
+      if (mock?.enable) {
+        console.log('LIFF init mock');
+        liff.use(mock?.plugin ?? new LiffMockPlugin());
+      }
+
+      await liff.init({
+        liffId,
+        mock: mock?.enable ?? false,
+      } as any);
+
+      if (mock?.mockDidLoaded) {
+        (liff as any).$mock.set(mock.mockDidLoaded);
+      }
+
+      console.log('LIFF init succeeded.');
+      setLiff(liff);
+    } catch (error) {
+      console.log('LIFF init failed.');
+      setLiffError((error as Error).toString());
+    }
+  }, [liffId, mock]);
+
   // init Liff
   useEffect(() => {
-    console.log('useEffect: LiffProvider');
-    import('@line/liff')
-      .then((liff) => liff.default)
-      .then((liff) => {
-        console.log('LIFF init...');
-        if (mock?.enable) {
-          console.log('LIFF init mock');
-          liff.use(mock?.plugin ?? new LiffMockPlugin());
-        }
-        liff
-          .init({
-            liffId,
-            mock: mock?.enable ?? false,
-          } as any)
-          .then(() => {
-            if (mock?.mockDidLoaded) {
-              (liff as any).$mock.set(mock.mockDidLoaded);
-            }
-            console.log('LIFF init succeeded.');
-            setLiff(liff);
-          })
-          .catch((error: Error) => {
-            console.log('LIFF init failed.');
-            setLiffError(error.toString());
-          });
-      });
-  }, [liffId, mock]);
+    console.log('LIFF init start...');
+    initLiff();
+  }, [initLiff]);
 
   return (
     <LiffContext.Provider
