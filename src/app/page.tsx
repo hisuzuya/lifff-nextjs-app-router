@@ -1,14 +1,16 @@
-'use client';
 import { useLiff } from '@/app/components/LiffProvider';
 import styles from '@/styles/Home.module.css';
 
+import { Profile } from './components/Profile';
+
 export default function Home() {
-  const { liff, liffError } = useLiff();
+  // const { liff, liffError } = useLiff();
+
   return (
     <div>
       <main className={styles.main}>
         <h1>create-liff-app</h1>
-        {liff && <p>LIFF init succeeded.</p>}
+        {/* {liff && <p>LIFF init succeeded.</p>}
         {liffError && (
           <>
             <p>LIFF init failed.</p>
@@ -16,7 +18,7 @@ export default function Home() {
               <code>{liffError}</code>
             </p>
           </>
-        )}
+        )} */}
         <a
           href='https://developers.line.biz/ja/docs/liff/'
           target='_blank'
@@ -24,6 +26,10 @@ export default function Home() {
         >
           LIFF Documentation
         </a>
+
+        <Profile />
+        <Profile />
+        <Profile />
       </main>
     </div>
   );

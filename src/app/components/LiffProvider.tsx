@@ -44,6 +44,7 @@ export const LiffProvider: FC<
 
       await liff.init({
         liffId,
+        withLoginOnExternalBrowser: true,
         mock: mock?.enable ?? false,
       } as any);
 
